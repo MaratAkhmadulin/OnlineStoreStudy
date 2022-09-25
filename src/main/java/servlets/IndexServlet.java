@@ -70,7 +70,7 @@ public class IndexServlet extends HttpServlet {
         Object valueSession = session.getAttribute(sessionProductName);
         int count = valueSession == null ? 0 : (Integer) valueSession;
         log.info("productName = {}, count = {}", productName, count);
-        if ("notValue".equals(productName)){
+        if (!"notValue".equals(productName)){
             session.setAttribute(sessionProductName,count + 1);
         }
 

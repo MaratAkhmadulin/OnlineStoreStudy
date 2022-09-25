@@ -1,6 +1,5 @@
 package servlets;
 
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import static servlets.Links.*;
+
 @WebServlet("/main")
 @Slf4j
 public class FrontControllerServlet extends HttpServlet {
@@ -20,29 +21,25 @@ public class FrontControllerServlet extends HttpServlet {
         log.info("in mainServlet");
         HttpSession session = req.getSession();
         session.setMaxInactiveInterval(60 * 1);
-        String stage = req.getParameter("stage");
-        String username = session.getAttribute("username") == null ? "Not value" : session.getAttribute("username").toString();
-        if ((req.getParameter("product") != null && "Not value".equals(username)) ||
-                ("cart".equals(req.getParameter("stage"))  && "Not value".equals(username))){
-            forwardReq(req, resp, "auth.jsp");
-        }
-        else{
+        String stage = req.getParameter(STAGE.getName());
+        if (existAuthSession(session.getAttribute(USERNAME.getName()), stage, req.getParameter(PRODUCT.getName()))){
             String path;
-            switch (req.getParameter("stage")) {
-                case ("main"):
-                    path = "/index";
-                    break;
+            switch (stage) {
                 case ("authentication"):
-                    path = "auth.jsp";
+                    path = AUTHJSP.getName();
                     break;
                 case ("cart"):
-                    path = "/cart";
+                    path = CARTPATH.getName();
                     break;
                 default:
-                    path = "/index";
+                    path = MAINPATH.getName();
                     break;
             }
             forwardReq(req, resp, path);
+        }
+        else{
+            forwardReq(req, resp, AUTHJSP.getName());
+
         }
 
     }
@@ -62,5 +59,12 @@ public class FrontControllerServlet extends HttpServlet {
         } else {
             req.getRequestDispatcher(path).forward(req, resp);
         }
+    }
+
+    private Boolean existAuthSession(Object userNameSession, String reqParamStage, String reqParamProduct) {
+
+        String username = userNameSession == null ? "Not value" : userNameSession.toString();
+        return !((reqParamProduct != null ||
+                ("cart".equals(reqParamStage))) && "Not value".equals(username)) ;
     }
 }

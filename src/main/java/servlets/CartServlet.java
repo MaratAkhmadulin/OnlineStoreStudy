@@ -19,7 +19,7 @@ public class CartServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         Map<String, Integer> productsMap = new HashMap<>();
-        Enumeration attrs =  request.getSession().getAttributeNames();
+        Enumeration attrs = request.getSession().getAttributeNames();
         while(attrs.hasMoreElements()) {
             String productName = attrs.nextElement().toString();
             if (productName.contains("cartproducts")){
