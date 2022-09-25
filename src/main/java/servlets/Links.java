@@ -10,6 +10,7 @@ public enum Links {
     MAIN ("main"),
     MAINPATH ("/index"),
     INDEXJSP ("index.jsp"),
+    MAINJSP ("main.jsp"),
     AUTH ("authentication"),
     AUTHPATH ("/auth"),
     AUTHJSP ("auth.jsp"),
