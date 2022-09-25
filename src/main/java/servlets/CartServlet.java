@@ -8,9 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+
+import static servlets.Links.CARTJSP;
+import static servlets.Links.CARTPRODUCTS;
 
 @WebServlet("/cart")
 @Slf4j
@@ -18,20 +19,20 @@ public class CartServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+        request.setAttribute(CARTPRODUCTS.getName(), getProductsMap(request.getSession()));
+        request.getRequestDispatcher(CARTJSP.getName()).forward(request, response);
+    }
+
+    private Map<String, Integer> getProductsMap(HttpSession session) {
         Map<String, Integer> productsMap = new HashMap<>();
-        Enumeration attrs = request.getSession().getAttributeNames();
-        while(attrs.hasMoreElements()) {
-            String productName = attrs.nextElement().toString();
-            if (productName.contains("cartproducts")){
-                productsMap.put(productName.substring(12), (int)request.getSession().getAttribute(productName));
+        Enumeration<String> attrs = session.getAttributeNames();
+        while (attrs.hasMoreElements()) {
+            String productName = attrs.nextElement();
+            if (productName.contains(CARTPRODUCTS.getName())) {
+                productsMap.put(productName.substring(12), (int) session.getAttribute(productName));
             }
         }
-
-        request.setAttribute("cartProducts", productsMap);
         log.info("cartProducts = {}", productsMap);
-        request.getRequestDispatcher("cart.jsp").forward(request, response);
-
-
-
+        return productsMap;
     }
 }
