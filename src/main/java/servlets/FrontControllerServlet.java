@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import static servlets.Links.*;
 
@@ -22,7 +21,7 @@ public class FrontControllerServlet extends HttpServlet {
         HttpSession session = req.getSession();
         session.setMaxInactiveInterval(60 * 1);
         String stage = req.getParameter(STAGE.getName());
-        if (existAuthSession(session.getAttribute(USERNAME.getName()), stage, req.getParameter(PRODUCT.getName()))){
+        if (existAuthSession(session.getAttribute(USERNAME.getName()), stage, req.getParameter(PRODUCT.getName()))) {
             String path;
             switch (stage) {
                 case ("authentication"):
@@ -36,10 +35,8 @@ public class FrontControllerServlet extends HttpServlet {
                     break;
             }
             forwardReq(req, resp, path);
-        }
-        else{
+        } else {
             forwardReq(req, resp, AUTHJSP.getName());
-
         }
 
     }
@@ -48,23 +45,18 @@ public class FrontControllerServlet extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
 
         log.info("in servlet main post");
-        forwardReq(req, resp, "/auth");
+        forwardReq(req, resp, AUTHPATH.getName());
     }
 
     private void forwardReq(HttpServletRequest req, HttpServletResponse resp, String path) throws ServletException, IOException {
-        PrintWriter out = resp.getWriter();
-        if ("error".equals(path)) {
-            out.println("select fo parameter \"stage\" value \"catalog\" or \"cart\"");
-            log.info("select fo parameter \"stage\" value \"catalog\" or \"cart\"");
-        } else {
+
             req.getRequestDispatcher(path).forward(req, resp);
-        }
     }
 
     private Boolean existAuthSession(Object userNameSession, String reqParamStage, String reqParamProduct) {
 
-        String username = userNameSession == null ? "Not value" : userNameSession.toString();
+        String username = userNameSession == null ? NOTVALUE.getName() : userNameSession.toString();
         return !((reqParamProduct != null ||
-                ("cart".equals(reqParamStage))) && "Not value".equals(username)) ;
+                (CART.getName().equals(reqParamStage))) && NOTVALUE.getName().equals(username));
     }
 }

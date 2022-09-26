@@ -6,7 +6,9 @@ import jakarta.servlet.http.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.Map;
+
+import static servlets.Links.INDEXJSP;
+import static servlets.Links.USERNAME;
 
 @WebServlet("/auth")
 @Slf4j
@@ -14,13 +16,14 @@ public class AuthenticationServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.info("In servlet auth");
-        if (verificationLoginAndPassword(request.getParameter("Login"), request.getParameter("Password"))) {
+        String login = request.getParameter("Login");
+        if (verificationLoginAndPassword(login, request.getParameter("Password"))) {
             HttpSession session = request.getSession();
-            session.setAttribute("username", session.getAttribute("username") == null ? request.getParameter("Login") : session.getAttribute("username"));
+            Object userNameSession = session.getAttribute(USERNAME.getName());
+            session.setAttribute(USERNAME.getName(), userNameSession == null ? login : userNameSession);
             session.setAttribute("authStatus", 1);
-            log.info("session username = {}", session.getAttribute("username"));
-            request.getRequestDispatcher("index.jsp").forward(request, response);
-            log.info("end auth");
+            log.info("session username = {}", userNameSession);
+            request.getRequestDispatcher(INDEXJSP.getName()).forward(request, response);
         } else {
             response.addCookie(new Cookie("code", "400"));
             response.sendError(400);

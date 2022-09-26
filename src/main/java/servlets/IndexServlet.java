@@ -17,9 +17,10 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import static servlets.Links.*;
 
 @Slf4j
 @WebServlet("/index")
@@ -42,7 +43,7 @@ public class IndexServlet extends HttpServlet {
             e.printStackTrace();
         }
 
-        request.getRequestDispatcher("main.jsp").forward(request, resp);
+        request.getRequestDispatcher(MAINJSP.getName()).forward(request, resp);
     }
 
     private Connection getConnection() throws NamingException, SQLException {
@@ -65,14 +66,13 @@ public class IndexServlet extends HttpServlet {
 
     private void setCountProducts(HttpServletRequest request, List<Products> products) throws SQLException {
         HttpSession session = request.getSession();
-        String productName = request.getParameter("product") == null ? "notValue" : request.getParameter("product");
-        String sessionProductName = "cartproducts" + productName;
+        String productName = request.getParameter(PRODUCT.getName()) == null ? NOTVALUE.getName() : request.getParameter(PRODUCT.getName());
+        String sessionProductName = CARTPRODUCTS.getName() + productName;
         Object valueSession = session.getAttribute(sessionProductName);
         int count = valueSession == null ? 0 : (Integer) valueSession;
         log.info("productName = {}, count = {}", productName, count);
-        if (!"notValue".equals(productName)){
+        if (!NOTVALUE.getName().equals(productName)){
             session.setAttribute(sessionProductName,count + 1);
         }
-
     }
 }
